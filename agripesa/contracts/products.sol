@@ -1,6 +1,8 @@
 pragma solidity ^0.4.0;
 import "./users.sol";
+import "./strings.sol";
 contract products is users {
+  using strings for *;
     struct product{
         uint listPointer;
         uint priceUnit;
@@ -53,13 +55,13 @@ contract products is users {
         require(i<getProductCount());
         return productsStructs[productsList[i]];
     }
-    function getProducts(uint offset,uint8 limit)public returns(string[100]){
-        uint memory productCount=getProductCount();
+    function getProducts(uint8 offset,uint8 limit)public returns(string[100]){
+        uint productCount=getProductCount();
         require(offset<c);
         require(limit<100);
         string[100] memory items;
-        uint8 memory i=0;
-        uint8 memory j=offset+limit;
+        uint8  i=0;
+        uint8  j=offset+limit;
 
         for(offset;offset<j;offset++)
         {

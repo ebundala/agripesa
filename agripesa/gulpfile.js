@@ -20,7 +20,7 @@ var spwner=function(cmd,kill){
     timeout: 0,
    // maxBuffer: 200*1024,
     killSignal: 'SIGTERM',
-    cwd: ProjectDir,
+    //cwd: ProjectDir,
     env: process.env
   };
   var child= cdvSpawn.exec(cmd, options,function(error, stdout, stderr){
@@ -69,8 +69,8 @@ gulp.task('default',["bootnode","run1","run2"],function(cb) {
 
 
 
-gulp.task('truffle compile',function(cb) {
-    spwner("truffle compile")
+gulp.task(' truffle compile',function(cb) {
+    spwner("start truffle compile")
 })
 
 gulp.task('truffle migrate',function(cb) {
