@@ -6,7 +6,7 @@ import logo from './logo.svg';
 import './App.css';
 let provider = new Web3.providers.HttpProvider('http://127.0.0.1:8545');
 //const contractAddress="0x6d5c753d0411992577d8a4293843872d5bf30f17";
-//let web3 = new Web3(provider)
+const web3 = new Web3(provider);
 class App extends Component {
   constructor(props){
 
@@ -28,7 +28,7 @@ class App extends Component {
           ctx.setState({instance});
           return instance
       }).then((inst)=>{
-          return inst.getOwner()
+          return inst.getOwner.call()
       }).then((owner)=>{
           ctx.setState({owner});
       }).catch(console.error);
@@ -48,7 +48,7 @@ class App extends Component {
   getOwner(e){
    let ctx=this;
       this.state.instance.getOwner.call().then((res)=>{
-          ctx.setState({user:res});
+          ctx.setState({owner:res});
       }).catch(console.error);
   }
   registerUser(){
@@ -58,63 +58,33 @@ class App extends Component {
           .then((res)=>{
           ctx.setState({transaction:res});
       }).catch(console.error);
-          /*.send({from:this.accounts[1],gas: 1500000})
-          .on('transactionHash', function(hash){
-         console.log("hash "+hash);
-         //ctx.state.transaction= {...{hash};
-              ctx.setState({transaction:{hash}});
-      })
-          .on('receipt', function(receipt){
-              console.log("receipt "+receipt);
-              //ctx.state.transaction.receipt=receipt;
-              ctx.setState({transaction:{receipt}})
-          })
-          .on('confirmation', function(confirmationNumber, receipt){
-              console.log("confirmation "+confirmationNumber);
-              let confirmation={confirmationNumber,receipt};
-              ctx.setState({transaction:{confirmationNumber}})
-          })
-          .on('error', console.error);*/
 
 
 
 
 
-          /*.call({from:this.web3.eth.accounts[0]},(error,result)=> {
-          if(error){
-              console.log(error)
-          }else {
-              console.log(result);
-              //ctx.setState({owner:result})
-          }
 
-      })*/
+
 
     }
   _users(){
       let ctx=this;
-      this.state.instance._users(this.accounts[0]).call({from:this.accounts[0]},(error,result)=> {
-          if(error){
-              console.log(error)
-          }else {
-              console.log(result);
-              ctx.setState({user:result})
-          }
-
-      })
+      this.state.instance._users.call(txOtions.from).then((res)=>{
+          ctx.setState({user:res});
+      }).catch(console.error);
   }
   getUserEtherBalance(){
       let ctx=this;
-      this.state.instance.getMyBalance.call()
+      this.state.instance.getUserBalance.call(txOtions)
           .then((res)=>{
-          ctx.setState({transaction:res});
+          ctx.setState({userBalance:res});
       }).catch(console.error);
 
 
   }
   getBaseEtherBalance(){
       let ctx=this;
-      this.state.instance.getMyBalance().then((res)=>{
+      this.state.instance.getBaseBalance.call(txOtions).then((res)=>{
           ctx.setState({baseBalance:res});
       }).catch(console.error);
 
@@ -122,28 +92,14 @@ class App extends Component {
   }
   topUpBase(){
       let ctx=this;
-      this.contractsMethod().topUpBase()
-          .send({from:this.accounts[1],value: 1500000})
-          .on('transactionHash', function(hash){
-              console.log("hash "+hash);
-              //ctx.state.transaction= {...{hash};
-              ctx.setState({transaction:{hash}});
-          })
-          .on('receipt', function(receipt){
-              console.log("receipt "+receipt);
-              //ctx.state.transaction.receipt=receipt;
-              ctx.setState({transaction:{receipt}})
-          })
-          .on('confirmation', function(confirmationNumber, receipt){
-              console.log("confirmation "+confirmationNumber);
-              let confirmation={confirmationNumber,receipt};
-              ctx.setState({transaction:{confirmation}})
-          })
-          .on('error', console.error);
+      this.state.instance.topUpBase({...txOtions,value:web3.toWei(9,"ether")}).then((res)=>{
+          ctx.setState({transaction:res});
+      })
+
   }
   topUpUser(){
       let ctx=this;
-      this.contractsMethod().topUpUser(this.accounts[1],70000)
+      this.state.instance.topUpUser(70000)
       /*.send({from:this.accounts[1]})
           .on('transactionHash', function(hash){
               console.log("hash "+hash);
@@ -204,7 +160,7 @@ class App extends Component {
           </p>
           <button  onClick={this.topUpUser}>top user balance</button>
           <p className="App-intron">
-              base balance{this.state.userBalance}
+              base balance{JSON.stringify(this.state.userBalance)}
           </p>
           <button  onClick={this.getBaseEtherBalance}>get base balance</button>
           <p className="App-intron">
