@@ -4,22 +4,28 @@
   "private": true,
   "dependencies": {
     "gulp": "^3.9.1",
+    "proxyquire": "^1.8.0",
     "react": "^16.2.0",
     "react-dom": "^16.2.0",
-    "react-scripts": "1.1.0"
+    "react-scripts": "1.1.0",
+    "rewire": "^3.0.2",
+    "save": "^2.3.2",
+    "truffle-contract": "^3.0.3"
   },
   "scripts": {
     "Run dev server": "npm start",
-    "Testnet":"ganache-cli",
-    "Compile": "truffle compile",
-    "Migrate": "truffle migrate",
-    "Test contracts": "truffle test",
+    "Testnet": "ganache-cli --defaultBalanceEther=100 --gasLimit=900000000",
+    "Compile": "node C:/Users/ebundala/AppData/Roaming/npm/node_modules/truffle/build/cli.bundled compile",
+    "Migrate": "node C:/Users/ebundala/AppData/Roaming/npm/node_modules/truffle/build/cli.bundled migrate",
+    "Test contracts": "node C:/Users/ebundala/AppData/Roaming/npm/node_modules/truffle/build/cli.bundled test",
     "Test dapp": "npm test",
-
     "Build for production": "npm run build",
-    "start": "react-scripts start",
-    "build": "react-scripts build",
-    "test": "react-scripts test --env=jsdom",
+    "start": "node scripts/customized-config start",
+    "build": "node scripts/customized-config build",
+    "test": "node scripts/customized-config test --env=jsdom",
     "eject": "react-scripts ejectc"
+  },
+  "devDependencies": {
+    "webpack-shell-plugin": "^0.5.0"
   }
 }

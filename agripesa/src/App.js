@@ -1,17 +1,17 @@
 import React, { Component } from 'react';
 //import getWeb3 from './utils/getWeb3'; zab 107-9,mark 1;
 import Web3 from 'web3'
-import abi from './contracts/kilimoCoin'
+import kilimoCoin,{txOtions} from './contracts/contract';
 import logo from './logo.svg';
 import './App.css';
 let provider = new Web3.providers.HttpProvider('http://127.0.0.1:8545');
-const contractAddress="0x6d5c753d0411992577d8a4293843872d5bf30f17";
+//const contractAddress="0x6d5c753d0411992577d8a4293843872d5bf30f17";
 //let web3 = new Web3(provider)
 class App extends Component {
   constructor(props){
 
     super();
-    this.state={owner:"",user:{},transaction:{},userBalance:"",baseBalance:""};
+    this.state={instance:{},owner:"",user:{},transaction:{},userBalance:"",baseBalance:""};
       this.getOwner=this.getOwner.bind(this);
       this.registerUser=this.registerUser.bind(this);
       this._users=this._users.bind(this);
@@ -22,36 +22,43 @@ class App extends Component {
   }
   componentDidMount(){
     this.web3=new Web3(provider);
-    this.contract= new this.web3.eth.Contract(abi.abi, contractAddress);
-    let ctx=this;
-    this.web3.eth.getAccounts().then((res)=>{
+      let ctx=this;
+      kilimoCoin.new().then((instance)=>{
+          console.log(instance);
+          ctx.setState({instance});
+          return instance
+      }).then((inst)=>{
+          return inst.getOwner()
+      }).then((owner)=>{
+          ctx.setState({owner});
+      }).catch(console.error);
+
+
+    /*this.web3.eth.getAccounts().then((res)=>{
         console.log(res);
         ctx.accounts=res;
     })
 
-   console.log(this.web3.eth.Coinbase)
+   console.log(this.web3.eth.Coinbase)*/
 
   }
   contractsMethod(){
-      return this.contract.methods;
+      return kilimoCoin.deployed();
   }
   getOwner(e){
    let ctx=this;
-      this.contractsMethod().getOwner().call({from:this.accounts[0]},(error,result)=> {
-      if(error){
-        console.log(error)
-      }else {
-        console.log(result);
-        ctx.setState({owner:result})
-      }
-
-    })
+      this.state.instance.getOwner.call().then((res)=>{
+          ctx.setState({user:res});
+      }).catch(console.error);
   }
   registerUser(){
       //console.log(this.web3.eth.getAccounts())
       let ctx=this;
-      this.contractsMethod().register("elias","joachim","bundala",989899,778899,"admin")
-          .send({from:this.accounts[1],gas: 1500000})
+      this.state.instance.register("elias","joachim","bundala",989899,778899,"admin")
+          .then((res)=>{
+          ctx.setState({transaction:res});
+      }).catch(console.error);
+          /*.send({from:this.accounts[1],gas: 1500000})
           .on('transactionHash', function(hash){
          console.log("hash "+hash);
          //ctx.state.transaction= {...{hash};
@@ -67,7 +74,7 @@ class App extends Component {
               let confirmation={confirmationNumber,receipt};
               ctx.setState({transaction:{confirmationNumber}})
           })
-          .on('error', console.error);
+          .on('error', console.error);*/
 
 
 
@@ -86,7 +93,7 @@ class App extends Component {
     }
   _users(){
       let ctx=this;
-      this.contractsMethod()._users(this.accounts[0]).call({from:this.accounts[0]},(error,result)=> {
+      this.state.instance._users(this.accounts[0]).call({from:this.accounts[0]},(error,result)=> {
           if(error){
               console.log(error)
           }else {
@@ -98,28 +105,20 @@ class App extends Component {
   }
   getUserEtherBalance(){
       let ctx=this;
-      this.contractsMethod().getMyBalance().call({from:this.accounts[1]},(error,result)=> {
-       if(error){
-       console.log(error)
-       }else {
-       console.log("ac 1 balance =",result);
-       //ctx.setState({userBalance:result})
-       }
+      this.state.instance.getMyBalance.call()
+          .then((res)=>{
+          ctx.setState({transaction:res});
+      }).catch(console.error);
 
-       })
 
   }
   getBaseEtherBalance(){
       let ctx=this;
-      this.contractsMethod().getMyBalance().call({from:this.accounts[1]},(error,result)=> {
-          if(error){
-              console.log(error)
-          }else {
-              console.log("base ac  balance =",result);
-              ctx.setState({baseBalance:result})
-          }
+      this.state.instance.getMyBalance().then((res)=>{
+          ctx.setState({baseBalance:res});
+      }).catch(console.error);
 
-      })
+
   }
   topUpBase(){
       let ctx=this;
@@ -138,13 +137,14 @@ class App extends Component {
           .on('confirmation', function(confirmationNumber, receipt){
               console.log("confirmation "+confirmationNumber);
               let confirmation={confirmationNumber,receipt};
-              ctx.setState({transaction:{confirmationNumber}})
+              ctx.setState({transaction:{confirmation}})
           })
           .on('error', console.error);
   }
   topUpUser(){
       let ctx=this;
-      this.contractsMethod().topUpUser(this.accounts[1],70000).send({from:this.accounts[1]})
+      this.contractsMethod().topUpUser(this.accounts[1],70000)
+      /*.send({from:this.accounts[1]})
           .on('transactionHash', function(hash){
               console.log("hash "+hash);
               //ctx.state.transaction= {...{hash};
@@ -158,9 +158,9 @@ class App extends Component {
           .on('confirmation', function(confirmationNumber, receipt){
               console.log("confirmation "+confirmationNumber);
               let confirmation={confirmationNumber,receipt};
-              ctx.setState({transaction:{confirmationNumber}})
+              ctx.setState({transaction:{confirmation}})
           })
-          .on('error', console.error);
+          .on('error', console.error);*/
 
 
 
@@ -187,7 +187,7 @@ class App extends Component {
         </p>
         <button  onClick={this.getOwner}>get owner</button>
         <p className="App-intro">
-          owner {this.state.owner}
+          owner {JSON.stringify(this.state.owner)}
         </p>
           <button  onClick={this.registerUser}>register user</button>
           <p className="App-intron">
@@ -200,7 +200,7 @@ class App extends Component {
           </p>
           <button  onClick={this.topUpBase}>top base balance</button>
           <p className="App-intron">
-            toped  base balance{this.state.baseBalance}
+            toped  base balance{JSON.stringify(this.state.baseBalance)}
           </p>
           <button  onClick={this.topUpUser}>top user balance</button>
           <p className="App-intron">
@@ -208,11 +208,12 @@ class App extends Component {
           </p>
           <button  onClick={this.getBaseEtherBalance}>get base balance</button>
           <p className="App-intron">
-              base balance{this.state.baseBalance}
+              base balance{JSON.stringify(this.state.baseBalance)}
           </p>
           <button  onClick={this.getUserEtherBalance}>user balance</button>
           <p className="App-intron">
-              user balance {this.state.userBalance}
+              user balance {JSON.stringify(this.state.userBalance)}
+
           </p>
 
       </div>

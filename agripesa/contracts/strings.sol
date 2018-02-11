@@ -340,9 +340,7 @@ library strings {
      * @return The hash of the slice.
      */
     function keccak(slice self) internal returns (bytes32 ret) {
-        assembly {
-            ret := keccak256(mload(add(self, 32)), mload(self))
-        }
+        assembly {ret := keccak256(mload(add(self, 32)), mload(self))}
     }
 
     /*

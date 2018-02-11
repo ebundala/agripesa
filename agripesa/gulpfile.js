@@ -70,7 +70,7 @@ gulp.task('default',["bootnode","run1","run2"],function(cb) {
 
 
 gulp.task(' truffle compile',function(cb) {
-    spwner("start truffle compile")
+    spwner("truffle compile")
 })
 
 gulp.task('truffle migrate',function(cb) {

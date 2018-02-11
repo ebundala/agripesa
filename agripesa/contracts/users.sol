@@ -35,7 +35,7 @@ contract users {
         //myAddress.transfer(msg.value);
 
     }
-    function getMyBalance()public view returns(uint){
+    function getMyBalance()public constant returns(uint){
         return myAddress.balance;
     }
     function topUpUser(address to,uint amount) public hasFunds(myAddress,amount){

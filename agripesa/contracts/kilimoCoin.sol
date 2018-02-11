@@ -1,6 +1,8 @@
 pragma solidity ^0.4.0;
 import "./products.sol";
-contract kilimoCoin is products {
+import "./users.sol";
+//import "./sensors.sol";
+contract kilimoCoin is users,products {
 
     function kilimoCoin()  {
 
