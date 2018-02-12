@@ -6,6 +6,7 @@ import logo from './logo.svg';
 import './App.css';
 let provider = new Web3.providers.HttpProvider('http://127.0.0.1:8545');
 //const contractAddress="0x6d5c753d0411992577d8a4293843872d5bf30f17";
+const product={name:"men's shoes",price:9000,quantity:89,brand:"nike",photos:["hhhjhhj","hjkhjkhjk"]};
 const web3 = new Web3(provider);
 class App extends Component {
   constructor(props){
@@ -19,6 +20,13 @@ class App extends Component {
       this.getUserEtherBalance=this.getUserEtherBalance.bind(this);
       this.topUpBase=this.topUpBase.bind(this);
       this.topUpUser=this.topUpUser.bind(this);
+
+      this.getProductCount=this.getProductCount.bind(this);
+      this.newProduct=this.newProduct.bind(this);
+      this.updateProduct=this.updateProduct.bind(this);
+      this.deleteProduct=this.deleteProduct.bind(this);
+      this.getProducts=this.getProducts.bind(this);
+      this.getProductStruct=this.getProductStruct.bind(this)
   }
   componentDidMount(){
     this.web3=new Web3(provider);
@@ -42,9 +50,39 @@ class App extends Component {
    console.log(this.web3.eth.Coinbase)*/
 
   }
-  contractsMethod(){
-      return kilimoCoin.deployed();
+    getProductCount(){
+      this.state.instance.getProductCount.call().then((count)=>{
+          console.log("products count ",count);
+          return count
+      }).catch(console.error)
+    }
+    getProductStruct(){
+        this.state.instance.productsStructs.call(0).then((product)=>{
+            console.log(product);
+        }).catch(console.error)
   }
+    newProduct(){
+        this.state.instance.newProduct(product.price,product.quantity,JSON.stringify(web3),txOtions).then((res)=>{
+            console.log(res);
+        }).catch(console.error)
+    }
+    deleteProduct(){
+        this.state.instance.deleteProduct(1,txOtions).then((res)=>{
+            console.log(res)
+        }).catch(console.error)
+    }
+    updateProduct(){
+        this.state.instance.updateProduct(0,99000,80,JSON.stringify(product),txOtions).then((res)=>{
+            console.log(res)
+        }).catch(console.error)
+    }
+    getProducts(){
+
+        this.state.instance.getProducts.call(0,90).then((products)=>{
+            console.log(products)
+        }).catch(console.error)
+
+    }
   getOwner(e){
    let ctx=this;
       this.state.instance.getOwner.call().then((res)=>{
@@ -98,54 +136,22 @@ class App extends Component {
 
   }
   topUpUser(){
-      let ctx=this;
-      this.state.instance.topUpUser(70000)
-      /*.send({from:this.accounts[1]})
-          .on('transactionHash', function(hash){
-              console.log("hash "+hash);
-              //ctx.state.transaction= {...{hash};
-              ctx.setState({transaction:{hash}});
-          })
-          .on('receipt', function(receipt){
-              console.log("receipt "+receipt);
-              //ctx.state.transaction.receipt=receipt;
-              ctx.setState({transaction:{receipt}})
-          })
-          .on('confirmation', function(confirmationNumber, receipt){
-              console.log("confirmation "+confirmationNumber);
-              let confirmation={confirmationNumber,receipt};
-              ctx.setState({transaction:{confirmation}})
-          })
-          .on('error', console.error);*/
+      //let ctx=this;
+      this.state.instance.topUpUser(70000);
 
-
-
-        /*  .send({from:this.accounts[1],gas:700000},(error,result)=> {
-          if(error){
-              console.log(error)
-          }else {
-              console.log("topUpUser =",result);
-             // ctx.setState({userBalance:result})
-          }
-
-      })*/
   }
   render() {
-
     return (
       <div className="App">
         <header className="App-header">
           <img src={logo} className="App-logo" alt="logo" />
           <h1 className="App-title">Welcome to React</h1>
         </header>
-        <p className="App-intro">
-          To get started, edit <code>src/App.js</code> and save to reload.
-        </p>
-        <button  onClick={this.getOwner}>get owner</button>
+        <button  onClick={this.getOwner}>getowner</button>
         <p className="App-intro">
           owner {JSON.stringify(this.state.owner)}
         </p>
-          <button  onClick={this.registerUser}>register user</button>
+          <button  onClick={this.registerUser}>register</button>
           <p className="App-intron">
               user {JSON.stringify(this.state.transaction)}
           </p>
@@ -171,6 +177,12 @@ class App extends Component {
               user balance {JSON.stringify(this.state.userBalance)}
 
           </p>
+          <button  onClick={this.getProductCount}>get product count</button>
+          <button  onClick={this.newProduct}>new product</button>
+          <button  onClick={this.updateProduct}>update product</button>
+          <button  onClick={this.deleteProduct}>delete product</button>
+          <button  onClick={this.getProductStruct}>get prod struct</button>
+          <button  onClick={this.getProducts}>get products</button>
 
       </div>
     );

@@ -11,12 +11,16 @@ module.exports = function(config) {
 
     // Add the SASS loader second-to-last
     // (last one must remain as the "file-loader")
-   /* let loaderList = config.module.rules[1].oneOf;
+    /*let loaderList = config.module.rules[1].oneOf;
     loaderList.splice(loaderList.length - 1, 0, {
         test: /\.sol/,
-        loader: 'truffle-solidity?migrations_directory='+path.resolve(__dirname, '../migrations' )
+        //loader: 'truffle-solidity?migrations_directory='+path.resolve(__dirname, '../migrations' )
+        loader: 'do-nothing'
     })*/
-
+    /*loaderList.push({
+        test: /\.json/,
+        loader: 'do-nothing'
+    })*/
    //config.plugins.push(new WebpackShellPlugin({dev:false,onBuildStart:['echo "Webpack Start"',"npm run Compile"], onBuildEnd:['echo "Webpack End"']}));
 
 }

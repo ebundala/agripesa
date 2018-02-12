@@ -7,8 +7,8 @@ let contract = require("truffle-contract");
 // Step 2: Turn that contract into an abstraction I can use
 
 export const txOtions={
-    from: "0x00d7dba5db94acc284db3cac9cca8676aa5368d6",
-    gas:9000000,
+    from: "0x941f3e4306121daec7593d4f6f7c1405bc34f469",
+    gas:900000000,
     // gasPrice:0.0009,
     //value: ...
 }
@@ -18,6 +18,4 @@ Contract.defaults(txOtions);
 Contract.setProvider(new Web3.providers.HttpProvider("http://127.0.0.1:8545"));
 
 // Step 4: Use the contract!
-
-
 export default Contract;

@@ -1,5 +1,5 @@
 pragma solidity ^0.4.0;
-//import "./users.sol";
+
 import "./strings.sol";
 contract products  {
     using strings for *;
@@ -13,24 +13,28 @@ contract products  {
     uint public productsCounter=0;//auto incrimented on insertion
     uint[] public productsList;
     mapping(uint => product) public productsStructs;
+    event ProductAdded(uint id);
+    event ProductUpdated(uint id);
+    event ProductDeleted(uint id);
 
-    function isProduct(uint entityAddress)public constant returns(bool isIndeed){
+
+    function isProduct(uint entityAddress)internal view returns(bool isIndeed){
         if(productsList.length==0) return false;
         return (productsList[productsStructs[entityAddress].listPointer])== entityAddress;
     }
-    function getProductCount() public constant returns(uint){
+    function getProductCount() public view returns(uint){
         return productsList.length;
     }
-    function newProduct(address owner,uint priceUnit,uint quantity,string metadata)public returns(bool success){
-
+    function newProduct(uint priceUnit,uint quantity,string metadata)public returns(bool success){
 
         require(!isProduct(productsCounter));
         productsStructs[productsCounter].priceUnit=priceUnit;
         productsStructs[productsCounter].quantity=quantity;
         productsStructs[productsCounter].metadata=metadata;
-        productsStructs[productsCounter].owner=owner;
+        productsStructs[productsCounter].owner=msg.sender;
         productsStructs[productsCounter].listPointer=productsList.push(productsCounter)-1;
         productsCounter++;//incriment the counter
+        ProductAdded(productsCounter);
         return true;
     }
     function updateProduct(uint entityAddress,uint priceUnit,uint quantity,string metadata)public returns(bool success){
@@ -38,7 +42,7 @@ contract products  {
         productsStructs[entityAddress].priceUnit=priceUnit;
         productsStructs[entityAddress].quantity=quantity;
         productsStructs[entityAddress].metadata=metadata;
-
+        ProductUpdated(entityAddress);
         return true;
     }
     function deleteProduct(uint entityAddress)public returns(bool success){
@@ -49,31 +53,32 @@ contract products  {
         productsStructs[keyToMove].listPointer=rowToDelete;
         productsList.length--;
         delete productsStructs[entityAddress];
+        ProductDeleted(entityAddress);
         return true;
     }
-    function getProductStruct(uint i)public constant returns(product item){
+    function getProductStruct(uint i)internal view returns(product item){
         require(i<getProductCount());
         return productsStructs[productsList[i]];
     }
-    function getProducts(uint offset,uint limit)public constant returns(string prod){
+    function getProducts(uint offset,uint limit)public constant returns(string){
         uint productCount=getProductCount();
         require(offset<productCount);
         require(limit<100);
-        strings.slice[] items;
-        // uint8  i=0;
+        strings.slice memory comma=",".toSlice();
+        string memory productsCatalog="[";
+
         uint j=offset+limit;
 
         for(offset;offset<j;offset++)
         {
             if(offset<productCount){
-                items.push(getProductStruct(offset).metadata.toSlice());
-                // i++;
+            productsCatalog=strings.concat(productsCatalog.toSlice(),strings.concat(getProductStruct(offset).metadata.toSlice(),comma).toSlice());
             }
             else{
                 break;
             }
         }
-        return strings.join(','.toSlice(),items);
+        return strings.concat(productsCatalog.toSlice(),"]".toSlice());//strings.join(','.toSlice(),items);
     }
 
     function products() public{
