@@ -80,7 +80,7 @@ gulp.task('truffle build',function(cb) {
     spwner("truffle build")
 })
 gulp.task('run1',function(cb) {
-    spwner("start geth --identity \"kilimoNet(v1.0)\" --fast --datadir data/data1 --networkid 88 --port 30307 --rpcport 8545 --ipcdisable --fast --rpcapi admin,eth,miner,web3,db  --rpccorsdomain \"*\" --rpc --bootnodes \"enode://2b0f042c945e9e84e55b832046ebe64dea63bc12a853123e318de3bf6e0b4d4c12ab62457959d787d4d8e6610e2dcb19c883c0405874870cb6c1468705c9aca2@127.0.0.1:30301\"  console 2>> data/data1/log.log",true);
+    spwner("start geth --identity \"kilimoNet(v1.0)\" --fast --datadir data/data1 --networkid 88 --port 30307 --rpcport 8545 --ipcdisable --fast --rpcapi admin,eth,miner,web3,db,personal,net,txpool  --rpccorsdomain \"*\" --rpc --bootnodes \"enode://2b0f042c945e9e84e55b832046ebe64dea63bc12a853123e318de3bf6e0b4d4c12ab62457959d787d4d8e6610e2dcb19c883c0405874870cb6c1468705c9aca2@127.0.0.1:30301\"  console 2>> data/data1/log.log",true);
     //--ipcapi admin,eth,miner  --rpcport 8545 --port 30302 --ipcdisable
     //ac "0xad5e22595e0ca1d516c12d808d991f230692b1fc" "0x1b977c7eceab181b9f0c80ab334fc84965c198d0"
     //ballot "0x51508ba363356755e153b00e0deefb39d750da7c"

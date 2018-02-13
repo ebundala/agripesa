@@ -5,9 +5,9 @@ let contract = require("truffle-contract");
 //let json = require("./json/kilimoCoin.json");
 //import myContract_artifacts from './solidity/kilimoCoin.sol';
 // Step 2: Turn that contract into an abstraction I can use
-
+export let contractAddress="0xf0cd2c0a7113783b48b435345035dabeaf38c360";
 export const txOtions={
-    from: "0x941f3e4306121daec7593d4f6f7c1405bc34f469",
+    from: "0x1b977c7eceab181b9f0c80ab334fc84965c198d0",
     gas:900000000,
     // gasPrice:0.0009,
     //value: ...

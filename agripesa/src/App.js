@@ -1,13 +1,14 @@
 import React, { Component } from 'react';
 //import getWeb3 from './utils/getWeb3'; zab 107-9,mark 1;
 import Web3 from 'web3'
-import kilimoCoin,{txOtions} from './contracts/contract';
+import kilimoCoin,{txOtions,contractAddress} from './contracts/contract';
 import logo from './logo.svg';
 import './App.css';
 let provider = new Web3.providers.HttpProvider('http://127.0.0.1:8545');
 //const contractAddress="0x6d5c753d0411992577d8a4293843872d5bf30f17";
 const product={name:"men's shoes",price:9000,quantity:89,brand:"nike",photos:["hhhjhhj","hjkhjkhjk"]};
 const web3 = new Web3(provider);
+
 class App extends Component {
   constructor(props){
 
@@ -28,18 +29,30 @@ class App extends Component {
       this.getProducts=this.getProducts.bind(this);
       this.getProductStruct=this.getProductStruct.bind(this)
   }
-  componentDidMount(){
-    this.web3=new Web3(provider);
+  componentWillMount(){
       let ctx=this;
-      kilimoCoin.new().then((instance)=>{
-          console.log(instance);
-          ctx.setState({instance});
-          return instance
-      }).then((inst)=>{
-          return inst.getOwner.call()
-      }).then((owner)=>{
-          ctx.setState({owner});
-      }).catch(console.error);
+      web3.personal.unlockAccount(txOtions.from, "kiazi-kitamu", 10000);
+      web3.settings.defaultAccount=txOtions.from;
+      if(contractAddress!==undefined)
+      {
+          kilimoCoin.at(contractAddress).then((instance)=>{
+              console.log(instance,web3);
+              ctx.setState({instance});
+          }).catch((e)=>{console.error("failed to load contract",e)});
+      }else {
+          kilimoCoin.new().then((instance)=>{
+              console.log(instance);
+              ctx.setState({instance});
+              return instance
+          }).then((inst)=>{
+              return inst.getOwner.call()
+          }).then((owner)=>{
+              ctx.setState({owner});
+          }).catch(console.error);
+      }
+  }
+  componentDidMount(){
+    this.web3=web3//new Web3(provider);
 
 
     /*this.web3.eth.getAccounts().then((res)=>{
@@ -62,7 +75,7 @@ class App extends Component {
         }).catch(console.error)
   }
     newProduct(){
-        this.state.instance.newProduct(product.price,product.quantity,JSON.stringify(web3),txOtions).then((res)=>{
+        this.state.instance.newProduct(product.price,product.quantity,JSON.stringify(web3.eth),txOtions).then((res)=>{
             console.log(res);
         }).catch(console.error)
     }

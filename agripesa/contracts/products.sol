@@ -7,7 +7,8 @@ contract products  {
         uint listPointer;
         uint priceUnit;
         uint quantity;
-        string metadata;
+        string  metadata;
+       // strings.slice metadataSlice;
         address owner;
     }
     uint public productsCounter=0;//auto incrimented on insertion
