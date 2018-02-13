@@ -14,6 +14,7 @@ class App extends Component {
 
     super();
     this.state={instance:{},owner:"",user:{},transaction:{},userBalance:"",baseBalance:""};
+      //user
       this.getOwner=this.getOwner.bind(this);
       this.registerUser=this.registerUser.bind(this);
       this._users=this._users.bind(this);
@@ -21,7 +22,13 @@ class App extends Component {
       this.getUserEtherBalance=this.getUserEtherBalance.bind(this);
       this.topUpBase=this.topUpBase.bind(this);
       this.topUpUser=this.topUpUser.bind(this);
+      this.getUsersCount=this.getUsersCount.bind(this);
+      this.newUser=this.newUser.bind(this);
+      this.updateUser=this.updateUser.bind(this);
+      this.deleteUser=this.deleteUser.bind(this);
+      this.getUsers=this.getUsers.bind(this);
 
+//products
       this.getProductCount=this.getProductCount.bind(this);
       this.newProduct=this.newProduct.bind(this);
       this.updateProduct=this.updateProduct.bind(this);
@@ -29,17 +36,20 @@ class App extends Component {
       this.getProducts=this.getProducts.bind(this);
       this.getProductStruct=this.getProductStruct.bind(this)
   }
-  componentWillMount(){
+  componentDidMount(){
       let ctx=this;
-      web3.personal.unlockAccount(txOtions.from, "kiazi-kitamu", 10000);
-      web3.settings.defaultAccount=txOtions.from;
-      if(contractAddress!==undefined)
+      this.web3=web3;
+      this.web3.personal.unlockAccount(txOtions.from, "kiazi-kitamu", 10000);
+      this.web3.settings.defaultAccount=txOtions.from;
+      if(contractAddress)
       {
+          console.log("contract using addr ",contractAddress);
           kilimoCoin.at(contractAddress).then((instance)=>{
               console.log(instance,web3);
               ctx.setState({instance});
           }).catch((e)=>{console.error("failed to load contract",e)});
       }else {
+          console.log("contract creation ",contractAddress);
           kilimoCoin.new().then((instance)=>{
               console.log(instance);
               ctx.setState({instance});
@@ -51,8 +61,8 @@ class App extends Component {
           }).catch(console.error);
       }
   }
-  componentDidMount(){
-    this.web3=web3//new Web3(provider);
+  componentWillMount(){
+    //new Web3(provider);
 
 
     /*this.web3.eth.getAccounts().then((res)=>{
@@ -63,6 +73,51 @@ class App extends Component {
    console.log(this.web3.eth.Coinbase)*/
 
   }
+    getUsersCount(){
+        this.state.instance.getUsersCount.call().then((count)=>{
+            console.log("users count ",count);
+            return count
+        }).catch(console.error)
+    }
+    newUser(){
+        this.state.instance.newUser("elias","joachim","bundala",989899,778899,"admin",JSON.stringify(this.web3.net))
+            .then((res)=>{
+                console.log({transaction:res});
+            }).catch(console.error);
+
+    }
+    registerUser(){
+        //console.log(this.web3.eth.getAccounts())
+        //let ctx=this;
+
+
+
+
+
+
+
+
+    }
+    updateUser(){
+        //let ctx=this;
+        this.state.instance.updateUser("elias","joachim","bundala",989899,778899,"admin",JSON.stringify(this.web3.net))
+            .then((res)=>{
+                console.log({transaction:res});
+            }).catch(console.error);
+    }
+    deleteUser(){
+        this.state.instance.deleteUser()
+            .then((res)=>{
+                console.log({transaction:res});
+            }).catch(console.error);
+    }
+    getUsers(){
+        this.state.instance.getUsers.call(0,90)
+            .then((res)=>{
+                console.log({transaction:res});
+            }).catch(console.error);
+    }
+  //products
     getProductCount(){
       this.state.instance.getProductCount.call().then((count)=>{
           console.log("products count ",count);
@@ -102,41 +157,27 @@ class App extends Component {
           ctx.setState({owner:res});
       }).catch(console.error);
   }
-  registerUser(){
-      //console.log(this.web3.eth.getAccounts())
-      let ctx=this;
-      this.state.instance.register("elias","joachim","bundala",989899,778899,"admin")
-          .then((res)=>{
-          ctx.setState({transaction:res});
-      }).catch(console.error);
 
-
-
-
-
-
-
-
-    }
   _users(){
-      let ctx=this;
+     // let ctx=this;
       this.state.instance._users.call(txOtions.from).then((res)=>{
-          ctx.setState({user:res});
+          console.log({user:res});
       }).catch(console.error);
   }
+  //utility methods
   getUserEtherBalance(){
-      let ctx=this;
+      //let ctx=this;
       this.state.instance.getUserBalance.call(txOtions)
           .then((res)=>{
-          ctx.setState({userBalance:res});
+          console.log({userBalance:res});
       }).catch(console.error);
 
 
   }
   getBaseEtherBalance(){
-      let ctx=this;
+     // let ctx=this;
       this.state.instance.getBaseBalance.call(txOtions).then((res)=>{
-          ctx.setState({baseBalance:res});
+          console.log({baseBalance:res});
       }).catch(console.error);
 
 
@@ -144,13 +185,15 @@ class App extends Component {
   topUpBase(){
       let ctx=this;
       this.state.instance.topUpBase({...txOtions,value:web3.toWei(9,"ether")}).then((res)=>{
-          ctx.setState({transaction:res});
+          console.log({transaction:res});
       })
 
   }
   topUpUser(){
       //let ctx=this;
-      this.state.instance.topUpUser(70000);
+      this.state.instance.topUpUser(70000).then((res)=>{
+          console.log(res)
+      });
 
   }
   render() {
@@ -164,29 +207,35 @@ class App extends Component {
         <p className="App-intro">
           owner {JSON.stringify(this.state.owner)}
         </p>
-          <button  onClick={this.registerUser}>register</button>
+
           <p className="App-intron">
               user {JSON.stringify(this.state.transaction)}
           </p>
 
           <button  onClick={this._users}>get user</button>
-          <p className="App-intron">
-              user {JSON.stringify(this.state.user)}
+          <button  onClick={this.getUsersCount}>get user count</button>
+          <button  onClick={this.newUser}>new user</button>
+          <button  onClick={this.updateUser}>update product</button>
+          <button  onClick={this.deleteUser}>delete user</button>
+
+          <button  onClick={this.getUsers}>get products</button>
+          <p className="App-intro">
+              utility
           </p>
           <button  onClick={this.topUpBase}>top base balance</button>
-          <p className="App-intron">
+          <p className="">
             toped  base balance{JSON.stringify(this.state.baseBalance)}
           </p>
           <button  onClick={this.topUpUser}>top user balance</button>
-          <p className="App-intron">
+          <p className="">
               base balance{JSON.stringify(this.state.userBalance)}
           </p>
           <button  onClick={this.getBaseEtherBalance}>get base balance</button>
-          <p className="App-intron">
+          <p className="">
               base balance{JSON.stringify(this.state.baseBalance)}
           </p>
           <button  onClick={this.getUserEtherBalance}>user balance</button>
-          <p className="App-intron">
+          <p className="">
               user balance {JSON.stringify(this.state.userBalance)}
 
           </p>
@@ -196,6 +245,9 @@ class App extends Component {
           <button  onClick={this.deleteProduct}>delete product</button>
           <button  onClick={this.getProductStruct}>get prod struct</button>
           <button  onClick={this.getProducts}>get products</button>
+          <p className="App-intro">
+              user
+          </p>
 
       </div>
     );

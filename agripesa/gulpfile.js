@@ -8,8 +8,8 @@ var gulp = require('gulp');
 
 //var fs = require('fs');
 
-var DIST = 'android/app/src/main/assets/';
-var ProjectDir="/../";
+var DIST = '';
+var ProjectDir="/";
 
 var spwner=function(cmd,kill){
   var cdvSpawn = require('child_process');
@@ -91,7 +91,7 @@ gulp.task('run1',function(cb) {
 })
 
 gulp.task('run2',function(cb) {
-    spwner("start geth --identity \"kilimoNet(v1.0)\"  --datadir data/data2 --networkid 88 --port 30315 --rpcport 8549 --ipcdisable  --fast --rpcapi admin,eth,miner,web3,db --rpccorsdomain \"*\" --rpc --bootnodes \"enode://2b0f042c945e9e84e55b832046ebe64dea63bc12a853123e318de3bf6e0b4d4c12ab62457959d787d4d8e6610e2dcb19c883c0405874870cb6c1468705c9aca2@127.0.0.1:30301\" console 2>> data/data2/log.log",true);
+    spwner("start geth --identity \"kilimoNet(v1.0)\"  --datadir data/data2 --networkid 88 --port 30315 --rpcport 8549 --ipcdisable  --fast --rpcapi admin,eth,miner,web3,db,personal,net,txpool --rpccorsdomain \"*\" --rpc --bootnodes \"enode://2b0f042c945e9e84e55b832046ebe64dea63bc12a853123e318de3bf6e0b4d4c12ab62457959d787d4d8e6610e2dcb19c883c0405874870cb6c1468705c9aca2@127.0.0.1:30301\" console 2>> data/data2/log.log",true);
     //--ipcapi admin,eth,miner  --rpcport 8545 --port 30302 --ipcdisable
     //ac "0x2dac9a988ee70f76892346f3a4d69ebd11f630d1"
     // spwner("start geth --datadir data2 --networkid 88",true);

@@ -8,7 +8,6 @@ contract products  {
         uint priceUnit;
         uint quantity;
         string  metadata;
-       // strings.slice metadataSlice;
         address owner;
     }
     uint public productsCounter=0;//auto incrimented on insertion
